@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoManager Pro - Data Loader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .step {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #16a085;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .btn-primary {
+            background-color: #16a085;
+            border-color: #16a085;
+        }
+        .btn-primary:hover {
+            background-color: #1abc9c;
+            border-color: #1abc9c;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EcoManager Pro - Sample Data Generator</h1>
+        
+        <div class="step">
+            <h3>Step 1: Download the Sample Data</h3>
+            <p>Click the button below to download the properly formatted JSON file:</p>
+            <button id="downloadBtn" class="btn btn-primary">Download Sample Data</button>
+        </div>
+        
+        <div class="step">
+            <h3>Step 2: Import into EcoManager Pro</h3>
+            <p>After downloading, follow these steps to import the data:</p>
+            <ol>
+                <li>Open the EcoManager Pro tool</li>
+                <li>Navigate to the "Data" section using the sidebar</li>
+                <li>Click the "Import Data" button</li>
+                <li>Select the JSON file you downloaded</li>
+                <li>Choose whether to overwrite existing data or merge with current data</li>
+                <li>Click "Import Data"</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>Step 3: Verify the Data</h3>
+            <p>After importing, check the different sections to see the sample data:</p>
+            <ul>
+                <li>View the <strong>Dashboard</strong> for overview statistics</li>
+                <li>Check the <strong>Projects</strong> section for sample projects</li>
+                <li>Explore the <strong>Assessments</strong> to see health metrics over time</li>
+                <li>Browse the <strong>Species</strong> database</li>
+                <li>Review <strong>Maintenance</strong> activities and schedule</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <h3>Manual Alternative: Create the File Yourself</h3>
+            <p>If the download doesn't work, you can create the file manually:</p>
+            <ol>
+                <li>Open Notepad or any text editor</li>
+                <li>Copy and paste the JSON code below</li>
+                <li>Save the file as <code>ecomanager-sample-data.json</code></li>
+                <li>Make sure to select "All Files" as the file type and add the <code>.json</code> extension</li>
+            </ol>
+            
+            <div class="code-block">
+                <pre id="jsonData"></pre>
+            </div>
+            <button id="copyBtn" class="btn btn-sm btn-outline-secondary">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample JSON data
+        const sampleData = {
+  "app": "EcoManager Pro",
+  "exportedAt": "2023-11-15T10:30:00.000Z",
+  "projects": [
+    {
+      "id": "proj-001",
+      "name": "Wetland Restoration - Johnson Creek",
+      "code": "JCWR-2023",
+      "startDate": "2023-03-15",
+      "status": "active",
+      "description": "Restoration of 5-acre wetland ecosystem along Johnson Creek to improve water quality and habitat for native species."
+    },
+    {
+      "id": "proj-002",
+      "name": "Urban Forest Canopy Expansion",
+      "code": "UFCE-2022",
+      "startDate": "2022-08-10",
+      "status": "active",
+      "description": "Planting and maintaining native tree species in urban areas to increase canopy cover and reduce heat island effect."
+    },
+    {
+      "id": "proj-003",
+      "name": "Coastal Dune Stabilization",
+      "code": "CDS-2023",
+      "startDate": "2023-01-20",
+      "status": "planning",
+      "description": "Stabilization of eroding coastal dunes through native vegetation planting and erosion control structures."
+    },
+    {
+      "id": "proj-004",
+      "name": "Riparian Zone Rehabilitation",
+      "code": "RZR-2021",
+      "startDate": "2021-05-05",
+      "status": "completed",
+      "description": "Rehabilitation of 2km riverbank through weed removal, native planting, and erosion control measures."
+    }
+  ],
+  "assessments": [
+    {
+      "id": "assess-001",
+      "date": "2023-10-15",
+      "assessor": "Dr. Emily Chen",
+      "health": "good",
+      "projectId": "proj-001",
+      "description": "Quarterly health assessment shows improved water quality indicators and increased macroinvertebrate diversity. Native plant survival rate at 85%."
+    },
+    {
+      "id": "assess-002",
+      "date": "2023-10-10",
+      "assessor": "Marcus Johnson",
+      "health": "excellent",
+      "projectId": "proj-002",
+      "description": "Fall assessment shows 92% tree survival rate. Canopy cover has increased by 15% since project inception. Minimal pest damage observed."
+    },
+    {
+      "id": "assess-003",
+      "date": "2023-09-28",
+      "assessor": "Dr. Emily Chen",
+      "health": "fair",
+      "projectId": "proj-001",
+      "description": "Noted some invasive reed encroachment in northwest section. Water levels lower than expected due to dry season."
+    },
+    {
+      "id": "assess-004",
+      "date": "2023-07-20",
+      "assessor": "Sarah Williams",
+      "health": "good",
+      "projectId": "proj-004",
+      "description": "Post-project assessment shows stabilized riverbanks and successful establishment of native vegetation. Fish populations have increased."
+    },
+    {
+      "id": "assess-005",
+      "date": "2023-04-15",
+      "assessor": "Marcus Johnson",
+      "health": "poor",
+      "projectId": "proj-001",
+      "description": "Initial assessment shows degraded conditions with high turbidity, low oxygen levels, and limited biodiversity."
+    }
+  ],
+  "species": [
+    {
+      "id": "species-001",
+      "name": "Red Maple",
+      "scientificName": "Acer rubrum",
+      "type": "plant",
+      "status": "native",
+      "projectId": "proj-002",
+      "description": "Deciduous tree providing excellent canopy cover and habitat. Drought tolerant once established."
+    },
+    {
+      "id": "species-002",
+      "name": "Blue-spotted Salamander",
+      "scientificName": "Ambystoma laterale",
+      "type": "animal",
+      "status": "native",
+      "projectId": "proj-001",
+      "description": "Indicator species for wetland health. Recently observed in restored area after 5-year absence."
+    },
+    {
+      "id": "species-003",
+      "name": "American Bullfrog",
+      "scientificName": "Lithobates catesbeianus",
+      "type": "animal",
+      "status": "pest",
+      "projectId": "proj-001",
+      "description": "Invasive species competing with native amphibians. Population control measures in place."
+    },
+    {
+      "id": "species-004",
+      "name": "Beach Grass",
+      "scientificName": "Ammophila breviligulata",
+      "type": "plant",
+      "status": "native",
+      "projectId": "proj-003",
+      "description": "Primary dune stabilizer with deep root systems. Planned for planting in spring 2024."
+    },
+    {
+      "id": "species-005",
+      "name": "Willow Oak",
+      "scientificName": "Quercus phellos",
+      "type": "plant",
+      "status": "native",
+      "projectId": "proj-002",
+      "description": "Fast-growing oak species suitable for urban environments. Provides excellent habitat value."
+    },
+    {
+      "id": "species-006",
+      "name": "Purple Loosestrife",
+      "scientificName": "Lythrum salicaria",
+      "type": "plant",
+      "status": "weed",
+      "projectId": "proj-001",
+      "description": "Invasive wetland plant that outcompetes native vegetation. Ongoing management required."
+    }
+  ],
+  "maintenance": [
+    {
+      "id": "maint-001",
+      "activity": "Invasive Species Removal",
+      "type": "weed-control",
+      "date": "2023-11-20",
+      "priority": "high",
+      "projectId": "proj-001",
+      "status": "scheduled",
+      "description": "Manual removal of purple loosestrife from northwest quadrant of wetland."
+    },
+    {
+      "id": "maint-002",
+      "activity": "Water Quality Testing",
+      "type": "water-quality",
+      "date": "2023-11-15",
+      "priority": "medium",
+      "projectId": "proj-001",
+      "status": "completed",
+      "completedDate": "2023-11-15",
+      "description": "Monthly testing for pH, dissolved oxygen, turbidity, and nutrient levels."
+    },
+    {
+      "id": "maint-003",
+      "activity": "Tree Health Inspection",
+      "type": "monitoring",
+      "date": "2023-12-05",
+      "priority": "medium",
+      "projectId": "proj-002",
+      "status": "scheduled",
+      "description": "Visual inspection of all planted trees for signs of disease, pest damage, or stress."
+    },
+    {
+      "id": "maint-004",
+      "activity": "Bird Species Survey",
+      "type": "survey",
+      "date": "2023-10-25",
+      "priority": "low",
+      "projectId": "proj-002",
+      "status": "completed",
+      "completedDate": "2023-10-26",
+      "description": "Quarterly survey of bird species utilizing the urban forest habitat."
+    },
+    {
+      "id": "maint-005",
+      "activity": "Erosion Control Inspection",
+      "type": "erosion-control",
+      "date": "2023-11-30",
+      "priority": "high",
+      "projectId": "proj-004",
+      "status": "scheduled",
+      "description": "Post-storm inspection of erosion control measures along riverbank."
+    },
+    {
+      "id": "maint-006",
+      "activity": "Equipment Maintenance",
+      "type": "equipment",
+      "date": "2023-11-10",
+      "priority": "medium",
+      "projectId": "proj-001",
+      "status": "completed",
+      "completedDate": "2023-11-10",
+      "description": "Scheduled maintenance for water testing equipment and vegetation management tools."
+    },
+    {
+      "id": "maint-007",
+      "activity": "Native Planting",
+      "type": "revegetation",
+      "date": "2024-02-15",
+      "priority": "high",
+      "projectId": "proj-003",
+      "status": "scheduled",
+      "description": "Spring planting of beach grass and other native dune species."
+    },
+    {
+      "id": "maint-008",
+      "activity": "Bullfrog Population Control",
+      "type": "pest-management",
+      "date": "2023-09-15",
+      "priority": "high",
+      "projectId": "proj-001",
+      "status": "completed",
+      "completedDate": "2023-09-16",
+      "description": "Implemented control measures for invasive bullfrog population."
+    }
+  ]
+};
+
+        // Display the JSON data in the pre tag
+        document.getElementById('jsonData').textContent = JSON.stringify(sampleData, null, 2);
+        
+        // Download functionality
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const dataStr = JSON.stringify(sampleData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'ecomanager-sample-data.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert('Download started! The file should be saved as "ecomanager-sample-data.json"');
+        });
+        
+        // Copy to clipboard functionality
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const textArea = document.createElement('textarea');
+            textArea.value = JSON.stringify(sampleData, null, 2);
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            alert('JSON data copied to clipboard!');
+        });
+    </script>
+</body>
+</html>

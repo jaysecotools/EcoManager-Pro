@@ -279,13 +279,18 @@
             background-color: var(--danger);
         }
 
-        /* Map Styles */
-        .map-container {
-            height: 300px;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
+/* Map Styles */
+.map-container {
+    height: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    /* Add these lines to control width */
+    width: 100%;
+    max-width: 800px; /* Adjust this value as needed */
+    margin-left: auto;
+    margin-right: auto;
+}
 
         .location-coordinates {
             background-color: #f8f9fa;
@@ -301,6 +306,26 @@
             overflow: hidden;
             cursor: pointer;
         }
+
+/* For the modal map */
+#projectMapModal .modal-dialog {
+    max-width: 900px; /* Adjust as needed */
+}
+
+#projectMapModal .map-container {
+    height: 500px; /* Fixed height for modal */
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0;
+}
+
+/* Ensure the map takes full container */
+#modalProjectMap {
+    height: 100%;
+    width: 100%;
+    min-height: 500px;
+}
 
         /* Mobile Responsiveness */
         @media (max-width: 992px) {
@@ -1359,24 +1384,32 @@
         let monthlyActivityChart = null;
 
         // Map Functions
-        function initProjectMap() {
-            if (projectMap) {
-                projectMap.remove();
-            }
-            
-            projectMap = L.map('projectMap').setView([0, 0], 2);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(projectMap);
-            
-            // Add click event to set marker
-            projectMap.on('click', function(e) {
-                setProjectMarker(e.latlng.lat, e.latlng.lng);
-            });
-            
-            return projectMap;
-        }
+function initProjectMap() {
+    if (projectMap) {
+        projectMap.remove();
+    }
+    
+    // Center on Burnie, Tasmania and zoom in
+    // Burnie coordinates: -41.0521, 145.9061
+    projectMap = L.map('projectMap').setView([-41.0521, 145.9061], 11);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(projectMap);
+    
+    // Add a marker for Burnie
+    L.marker([-41.0521, 145.9061])
+        .addTo(projectMap)
+        .bindPopup('Burnie, Tasmania')
+        .openPopup();
+    
+    // Add click event to set marker
+    projectMap.on('click', function(e) {
+        setProjectMarker(e.latlng.lat, e.latlng.lng);
+    });
+    
+    return projectMap;
+}
 
         function setProjectMarker(lat, lng) {
             // Update form fields
@@ -1423,44 +1456,63 @@
             }
         }
 
-        function showProjectInModal(project) {
-            const modalTitle = document.getElementById('projectMapModalTitle');
-            const modalMapContainer = document.getElementById('modalProjectMap');
-            const modalCoordinates = document.getElementById('modalCoordinates');
+function showProjectInModal(project) {
+    const modalTitle = document.getElementById('projectMapModalTitle');
+    const modalMapContainer = document.getElementById('modalProjectMap');
+    const modalCoordinates = document.getElementById('modalCoordinates');
+    
+    modalTitle.textContent = `${project.name} Location`;
+    
+    // Clear previous map
+    if (modalProjectMap) {
+        modalProjectMap.remove();
+        modalProjectMap = null;
+    }
+    
+    // Clear the map container
+    modalMapContainer.innerHTML = '';
+    
+    // Show modal first, then initialize map
+    const modal = new bootstrap.Modal(document.getElementById('projectMapModal'));
+    modal.show();
+    
+    // Initialize map after modal is fully shown
+    setTimeout(() => {
+        // Recreate the map container element
+        modalMapContainer.innerHTML = '<div id="modalMap" style="height: 100%; width: 100%;"></div>';
+        
+        // Initialize map
+        modalProjectMap = L.map('modalMap').setView([0, 0], 2);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(modalProjectMap);
+        
+        // Add marker if coordinates exist
+        if (project.latitude && project.longitude) {
+            const lat = parseFloat(project.latitude);
+            const lng = parseFloat(project.longitude);
             
-            modalTitle.textContent = `${project.name} Location`;
+            modalProjectMarker = L.marker([lat, lng]).addTo(modalProjectMap)
+                .bindPopup(project.name)
+                .openPopup();
             
-            // Clear previous map
-            if (modalProjectMap) {
-                modalProjectMap.remove();
-            }
+            modalProjectMap.setView([lat, lng], 10);
+            modalCoordinates.textContent = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             
-            // Initialize map in modal
-            modalProjectMap = L.map(modalMapContainer).setView([0, 0], 2);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(modalProjectMap);
-            
-            // Add marker if coordinates exist
-            if (project.latitude && project.longitude) {
-                const lat = parseFloat(project.latitude);
-                const lng = parseFloat(project.longitude);
-                
-                modalProjectMarker = L.marker([lat, lng]).addTo(modalProjectMap)
-                    .bindPopup(project.name)
-                    .openPopup();
-                
-                modalProjectMap.setView([lat, lng], 10);
-                modalCoordinates.textContent = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-            } else {
-                modalCoordinates.textContent = 'Coordinates: Not specified';
-            }
-            
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('projectMapModal'));
-            modal.show();
+            // Force resize and invalidate map size
+            setTimeout(() => {
+                modalProjectMap.invalidateSize();
+            }, 100);
+        } else {
+            modalCoordinates.textContent = 'Coordinates: Not specified';
+            // Force resize for default view too
+            setTimeout(() => {
+                modalProjectMap.invalidateSize();
+            }, 100);
         }
+    }, 300); // Small delay to ensure modal is visible
+}
 
         // UI Functions
         function showToast(title, message, type = 'success') {
